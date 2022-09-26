@@ -3,10 +3,9 @@
 #include "hand.hpp"
 #include "shoe.hpp"
 
-#define WIN 1
-#define LOSS -1
-#define PUSH 0
+enum result {WIN, LOSS, PUSH};
 
+enum action {STAND, HIT, DOUBLE, SPLIT, SURRENDER};
 
 class Player : public Hand {
     double bankroll = 0;
@@ -18,9 +17,16 @@ public:
     Player() {};
     Player(double b) : bankroll(b) {};
     void clear();
+
+    action getAction(const Shoe &);
+
     double makeBet(const Shoe &);
     double modifyBet(double);
+    void resolveBet();
+
     double makeBetInsurance(const Shoe &);
     void resolveInsurance(bool, double);
-    void resolveBet();
+
+    //Testing
+    void setHand(const std::vector<int> &);
 };
