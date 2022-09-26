@@ -1,26 +1,33 @@
 #include "hand.hpp"
 
 bool Hand::draw(int c) {
-    if (c == 11) {
+    if (c == 11 && sum <= 10) {
         isSoft = true;
-        if (sum > 11) sum++;
+        sum += c;
+    } else if (c == 11) {
+        sum++;
+    } else {
+        sum += c;
+    }
+    if (isSoft && sum > 21) {
+        sum -= 10;
+        isSoft = false;
     }
     cards.push_back(c);
 
     return true;
 }
-/*
-int Hand::sum() {
-        int total = 0;
-        int aces = 0;
-        for (int i : cards) {
-            if (i == 11) aces++;
-            total += i;
-        }
-        while (aces > 0 && total > 21) {
-            total -= 10;
-            aces--;
-        }
-        return total;
-    }
-    */
+
+
+void Hand::clear() {
+    cards.clear();
+    sum = 0;
+}
+
+int Hand::getSum() {
+    return sum;
+}
+
+bool Hand::bust() {
+    return sum > 21;
+}

@@ -1,15 +1,10 @@
 #include "dealer.hpp"
 
-bool Dealer::draw(int c) {
-    cards.push_back(c);
+int Dealer::holeCard() {
+    return cards.size() > 0 ? cards[0] : -1;
 }
 
-void Dealer::clear() {
-    cards.clear();
-    holeCard = -1;
+int Dealer::upCard() {
+    return cards.size() > 1 ? cards[1] : -1;
 }
 
-int Dealer::flipHoleCard() {
-    cards.push_back(holeCard);
-    return holeCard;
-}

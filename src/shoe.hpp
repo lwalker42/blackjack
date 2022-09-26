@@ -12,7 +12,6 @@ class Shoe {
     int numDecks;
     int numCards;
     std::vector<int> deck;
-    std::vector<int> seen;
     void shuffle();
 
 public:

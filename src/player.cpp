@@ -1,14 +1,45 @@
 #include "player.hpp"
 
-bool Player::draw(int c) {
-    cards.push_back(c);
-    return true;
-}
 
 void Player::clear() {
-    cards.clear();
+    Hand::clear();
+    bet = 0;
+    won = PUSH;
+    insurance = 0;
 }
 
-int Player::makeBet(const Shoe &shoe) {
+//TODO: limit overbetting bankroll, especially in special cases (doubling, splitting)
+double Player::makeBet(const Shoe &shoe) {
+    return bet;
+}
+
+double Player::modifyBet(double d) {
+    bet *= d;
+    return bet;
+}
+
+void Player::resolveBet() {
+    switch (won) {
+    case WIN:
+        bankroll += bet;
+        break;
+    case LOSS:
+        bankroll -= bet;
+        break;
+    case PUSH:
+        break;
+    }    
+}
+
+
+double Player::makeBetInsurance(const Shoe &shoe) {
     return 0;
+    //return bet/2;
+}
+
+void Player::resolveInsurance(bool dealerBJ, double payout) {
+    if (dealerBJ)
+        bankroll += insurance * payout;
+    else
+        bankroll -= insurance;
 }

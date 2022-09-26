@@ -11,24 +11,45 @@ void Game::playRound() {
     if (shoe.cutCardReached(rules.deckPenetration)) shoe.initDeck();
     if (betting) bet();
     deal();
-    checkBlackjack();
+    //Short circuiting
+    bool insurance = rules.insurance && checkInsurance();
+    bool blackjack = checkBlackjack();
+
+    cleanupRound(blackjack, insurance);
 }
 
+int Game::playHand(Player &p) {
+    return PUSH;
+}
+
+
+
 void Game::deal() {
+    /*
+    //Order of nested loop matters if deck penetration is 100%
+    //But slower to access players vector multiple times
+    for (int i = 0; i < 2; i++) {
+        //Handle counting here later
+        shoe.draw(dealer);
+    }*/
+
     for (auto &player : players) {
         for (int i = 0; i < 2; i++) {
-            shoe.draw(player);
+            dealOne(player);
         }
     }
     for (int i = 0; i < 2; i++) {
         //Handle counting here later
-        shoe.draw(dealer);
+            dealOne(dealer);
     }
 }
 
 int Game::dealOne(Hand &h) {
-    shoe.draw(h);
-    return 0;
+    return shoe.draw(h);
+    /*
+    int card = shoe.draw(h);
+    return card;
+    */
 }
 
 void Game::bet() {
@@ -37,24 +58,42 @@ void Game::bet() {
     }
 }
 
-void Game::checkBlackjack() {
-    bool dealerBJ = 
-    if (dealer.sum() == 21) {
-
-    }
+/*Returns true if dealer has blackjack
+ */
+bool Game::checkBlackjack() {
+    bool dealerBJ = dealer.getSum() == 21;
+    
     for (auto &player : players) {
-        if (player.sum() == 21) {
-
+        if (player.getSum() == 21) {
+            player.won = dealerBJ ? PUSH : WIN;
+            player.modifyBet(rules.blackjackPayout);
+        } else if (dealerBJ) {
+            player.won = LOSS;
         }
     }
+    return dealerBJ;
 }
 
-void Game::cleanupRound() {
+//Insurance and even money are the same
+bool Game::checkInsurance() {
+    if (betting && dealer.upCard() == 11) {
+        for (auto &player : players) {
+            player.makeBetInsurance(shoe);
+        }
+    }
+    return dealer.upCard() == 11;
+}
+
+
+void Game::cleanupRound(bool blackjack, bool insurance) {
     dealer.clear();
     for (auto &player : players) {
+        if (betting) {
+            player.resolveBet();
+            if (insurance) player.resolveInsurance(blackjack, 2);
+        }
         player.clear();
     }
-    //Do something here for bets
 }
 
 void Game::addPlayer(const Player &p) {

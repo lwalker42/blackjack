@@ -9,13 +9,10 @@ protected:
 public:
     bool isSoft = false;
     //Draw one card
-    virtual bool draw(int) = 0;     //
+    virtual bool draw(int);// = 0;     //
     //Clear hand
-    virtual void clear() = 0;
+    virtual void clear();// = 0;
 
-    //int sum();
-
-    bool bust() {
-        return sum > 21;
-    }
+    int getSum();
+    bool bust();
 };

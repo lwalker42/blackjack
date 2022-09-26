@@ -12,7 +12,6 @@ Shoe::Shoe(int d) {
 
 void Shoe::initDeck() {
     deck.clear();
-    seen.clear();
 
     for (int i = 0; i < numDecks * SUITS; i++) {
         for (int j = 0; j < CARDS_PER_SUIT; j++) {
@@ -25,9 +24,7 @@ void Shoe::initDeck() {
 int Shoe::draw(Hand &hand) {
     int card = deck.back();
     deck.pop_back();
-    if (hand.draw(card)) {
-        seen.push_back(card);
-    }
+    hand.draw(card);
     return card;
 }
 
