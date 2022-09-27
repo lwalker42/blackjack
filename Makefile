@@ -1,13 +1,29 @@
-CC = g++
-DIR = ./src
-CFLAGS = -I $(DIR)
-FILES = ./src/*.cpp
+CC := g++
+CFLAGS := -Wall -Wextra 
+SRC := ./src
+OBJDIR := ./obj
+INC := -I $(SRC)
+ALL := $(wildcard $(SRC)/*.cpp)
+MAINS := $(SRC)/blackjack.cpp $(SRC)/stats.cpp 
+FILTERED := $(filter-out $(MAINS), $(ALL))
+OBJS := $(patsubst $(SRC)/%.cpp, $(OBJDIR)/%.o, $(FILTERED))
 
-blackjack: $(FILES)
-	$(CC) -o build/$@ -I $(DIR) $?
 
-.cpp.o:
-	$(CC) $(CFLAGS) -c $(DIR)/$*.cpp
+blackjack: $(OBJDIR)/blackjack.o $(OBJS) | build
+	$(CC) $(CFLAGS) -o build/$@ $(INC) $^
 
-blackjack.o: ./src/blackjack.cpp ./src/blackjack.hpp 
-	$(CC) -c $(DIR)/blackjack.cpp
+stats: $(OBJDIR)/stats.o $(OBJS) | build
+	$(CC) $(CFLAGS) -o build/$@ $(INC) $^
+
+$(OBJDIR)/%.o: $(SRC)/%.cpp | obj
+	$(CC) $(CFLAGS) -c $< -o $@
+
+obj:
+	mkdir -p $@
+
+build:
+	mkdir -p $@
+
+clean:
+	rm -rf build/
+	rm -rf obj/

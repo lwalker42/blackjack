@@ -20,8 +20,8 @@ class Game {
     void cleanupRound(bool, bool);
 
 public:
-    bool betting;
     Rules rules;
+    bool betting;
 
     Game(Rules &, bool = false);
     void playRound();
