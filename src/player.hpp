@@ -1,11 +1,14 @@
 #pragma once
+#include <vector>
 
 #include "hand.hpp"
 #include "shoe.hpp"
 
-enum result {WIN, LOSS, PUSH};
+enum result {WIN, LOSS, PUSH, BLACKJACK};
 
 enum action {STAND, HIT, DOUBLE, SPLIT, SURRENDER};
+
+typedef std::vector<action> actionList;
 
 class Player : public Hand {
     double bankroll = 0;
@@ -18,7 +21,8 @@ public:
     Player(double b) : bankroll(b) {};
     void clear();
 
-    action getAction(const Shoe &);
+    virtual action getAction(const Shoe &);
+    actionList possibleActions();
 
     double makeBet(const Shoe &);
     double modifyBet(double);

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <stdexcept>
 
 struct Rules {
     int minBet;
@@ -22,7 +23,7 @@ struct Rules {
             minBet = minB;
             maxBet = maxB;
         } else {
-            throw "Invalid bet sizes";
+            throw std::invalid_argument("Invalid bet sizes");
         }
     };
 

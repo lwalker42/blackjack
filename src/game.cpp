@@ -1,3 +1,5 @@
+#include <algorithm> //find
+
 #include "player.hpp"
 #include "dealer.hpp"
 #include "game.hpp"
@@ -19,6 +21,7 @@ void Game::playRound() {
 }
 
 int Game::playHand(Player &p) {
+
     return PUSH;
 }
 
@@ -46,10 +49,6 @@ void Game::deal() {
 
 int Game::dealOne(Hand &h) {
     return shoe.draw(h);
-    /*
-    int card = shoe.draw(h);
-    return card;
-    */
 }
 
 void Game::bet() {
@@ -85,7 +84,7 @@ bool Game::checkInsurance() {
 }
 
 
-void Game::cleanupRound(bool blackjack, bool insurance) {
+void Game:: cleanupRound(bool blackjack, bool insurance) {
     dealer.clear();
     for (auto &player : players) {
         if (betting) {

@@ -9,9 +9,9 @@ protected:
 public:
     bool isSoft = false;
     //Draw one card
-    virtual bool draw(int);// = 0;     //
+    virtual bool draw(int);
     //Clear hand
-    virtual void clear();// = 0;
+    virtual void clear();
 
     int getSum();
     bool bust();

@@ -4,6 +4,7 @@
 #include "shoe.hpp"
 
 int main() {
+    //Make sure random numbers are in fact random
     Player p;
     Shoe shoe;
     p.setHand({4, 4});
@@ -21,6 +22,8 @@ int main() {
         chiSquared += (counts[i] - trials/5.) * (counts[i] - trials/5.) / (trials/5.);
     }
     std::cout << "Chi-squared value: " << chiSquared << " with 4 degrees of freedom";
+
+    
     return 0;
 }
     
