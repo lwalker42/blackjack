@@ -11,12 +11,14 @@ class Game {
     Dealer dealer;
     std::vector<Player> players;
 
-    int playHand(Player &);
+    result playHand(Player &);
+    int playDealer();
     void deal();
     int dealOne(Hand &);
     void bet();
     bool checkBlackjack();
     bool checkInsurance();
+    result setResult(Player &);
     void cleanupRound(bool, bool);
 
 public:

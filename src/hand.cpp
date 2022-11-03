@@ -2,16 +2,16 @@
 
 bool Hand::draw(int c) {
     if (c == 11 && sum <= 10) {
-        isSoft = true;
+        soft = true;
         sum += c;
     } else if (c == 11) {
         sum++;
     } else {
         sum += c;
     }
-    if (isSoft && sum > 21) {
+    if (soft && sum > 21) {
         sum -= 10;
-        isSoft = false;
+        soft = false;
     }
     cards.push_back(c);
 
@@ -26,6 +26,14 @@ void Hand::clear() {
 
 int Hand::getSum() {
     return sum;
+}
+
+int Hand::size() {
+    return cards.size();
+}
+
+bool Hand::isSoft() {
+    return soft;
 }
 
 bool Hand::bust() {

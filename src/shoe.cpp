@@ -22,6 +22,10 @@ void Shoe::initDeck() {
 }
 
 int Shoe::draw(Hand &hand) {
+    //Auto-shuffle
+    if (deck.size() == 0) {
+        initDeck();
+    }
     int card = deck.back();
     deck.pop_back();
     hand.draw(card);
