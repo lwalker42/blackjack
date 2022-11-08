@@ -12,8 +12,9 @@ int main() {
     int trials;
     std::cout << "Enter number of trials: ";
     std::cin >> trials;
+    Rules r;
     for (int i = 0; i < trials; i++) {
-        int a = p.getAction(shoe);
+        int a = p.getAction(shoe, 0, r);
         counts[a]++;
     }
     double chiSquared = 0;

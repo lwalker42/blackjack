@@ -1,15 +1,18 @@
 #pragma once
 #include <vector>
+#include <string>
 
 #include "rules.hpp"
 #include "hand.hpp"
 #include "shoe.hpp"
-
 enum result {WIN, LOSS, PUSH, BLACKJACK};
+
+std::string toString(result);
 
 enum action {STAND, HIT, DOUBLE, SPLIT, SURRENDER};
 
 typedef std::vector<action> actionList;
+class Player;
 typedef std::vector<Player> splits;
 
 class Player : public Hand {
@@ -40,7 +43,4 @@ public:
 
     double makeBetInsurance();
     void resolveInsurance(bool, double);
-
-    //Testing
-    void setHand(const std::vector<int> &);
 };

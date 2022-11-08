@@ -5,8 +5,12 @@
 #include "shoe.hpp"
 #include "player.hpp"
 #include "dealer.hpp"
+#include "debug.hpp"
 
 class Game {
+#ifdef DEBUG
+public:
+#endif
     Shoe shoe;
     Dealer dealer;
     std::vector<Player> players;
@@ -25,7 +29,7 @@ public:
     Rules rules;
     bool betting;
 
-    Game(Rules &, bool = false);
+    Game(Rules &, int = 6, bool = false);
     void playRound();
     
     

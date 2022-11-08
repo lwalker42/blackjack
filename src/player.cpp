@@ -3,6 +3,10 @@
 
 #include "player.hpp"
 
+std::string toString(result w) {
+    static const std::string strs[] = {"win", "loss", "push", "blackjack"};
+    return strs[w];
+}
 
 void Player::clear() {
     Hand::clear();
@@ -13,6 +17,7 @@ void Player::clear() {
 }
 
 action Player::getAction(const Shoe &, int upCard, Rules &rules) {
+    (void)upCard;
     actionList actions = possibleActions(rules);
     
     static std::random_device rd;
@@ -23,6 +28,7 @@ action Player::getAction(const Shoe &, int upCard, Rules &rules) {
 }
 
 actionList Player::possibleActions(Rules &rules) {
+    (void)rules;
     //Double and surrender available
     if (cards.size() == 2) {
         //Split available
@@ -115,13 +121,4 @@ void Player::resolveInsurance(bool dealerBJ, double payout) {
         bankroll += insurance * payout;
     else
         bankroll -= insurance;
-}
-
-
-
-void Player::setHand(const std::vector<int> &newCards) {
-    cards.clear();
-    for (int card : newCards) {
-        cards.push_back(card);
-    }
 }

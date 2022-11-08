@@ -6,11 +6,12 @@
 #include "game.hpp"
 
 
-Game::Game(Rules &r, bool b) : rules(r), betting(b) {
-    Shoe shoe;
+Game::Game(Rules &r, int numDecks, bool b) : rules(r), betting(b) {
+    Shoe shoe(numDecks);
 }
 
 void Game::playRound() {
+    DEBUG_PRINT("Starting round");
     if (shoe.cutCardReached(rules.deckPenetration)) shoe.initDeck();
     if (betting) bet();
     deal();
@@ -18,17 +19,34 @@ void Game::playRound() {
     bool insurance = rules.insurance && betting && checkInsurance();
     bool blackjack = checkBlackjack();
 
+    if(blackjack) DEBUG_PRINT("Dealer blackjack");
+    if(insurance) DEBUG_PRINT("Insurance offered");
+    DEBUG_PRINT("Dealer upcard: " + std::to_string(dealer.upCard()));
     if (!blackjack) {
+        int i = 0;
         for (auto &player : players) {
+            i++;
+            DEBUG_PRINT("Player " + std::to_string(i) + "'s starting hand: " + player.toString() 
+                        + " with total: " + std::to_string(player.getSum()));
             playHand(player);
+            DEBUG_PRINT("Player " + std::to_string(i) + "'s ending hand: " + player.toString() 
+                        + " with total: " + std::to_string(player.getSum()));
         }
+        DEBUG_PRINT("Dealer's starting hand: " + dealer.toString() + " with total: " 
+                    + std::to_string(dealer.getSum()));
         playDealer();
+        DEBUG_PRINT("Dealer's ending hand: " + dealer.toString() + " with total: " 
+                    + std::to_string(dealer.getSum()));
+        i = 0;
         for (auto &player : players) {
+            i++;
             setResult(player);
+            DEBUG_PRINT("Player " + std::to_string(i) + "'s result: " + toString(player.won));
         }
     }
 
     cleanupRound(blackjack, insurance);
+    DEBUG_PRINT("End round");
 }
 
 result Game::playHand(Player &p) {
@@ -50,7 +68,7 @@ result Game::playHand(Player &p) {
 
         action a = p.getAction(shoe, dealer.upCard(), rules);
         actionList all = current.possibleActions(rules);
-        if (std::any_of(all.begin(), all.end(), a)) {
+        if (std::find(all.begin(), all.end(), a) != all.end()) {
             if (a == STAND) {
                 i++;
             } else if (a == HIT) {
@@ -86,11 +104,9 @@ result Game::playHand(Player &p) {
 
 
 int Game::playDealer() {
-    //Stand when sum greater than 17 OR equal to 17 and stand soft 17
-    //OR hit soft 17 and equal to 17 and hard total
-    while (dealer.getSum() > 17 ||
-           rules.s17 && dealer.getSum() == 17 ||
-           dealer.getSum() == 17 && !dealer.isSoft()) {
+    //Hit when sum is less than 17 OR equal to 17 AND soft AND NOT stand soft 17
+    while (dealer.getSum() < 17 || 
+          (!rules.s17 && dealer.getSum() == 17 && dealer.isSoft())) {
         dealOne(dealer);
     }
     return dealer.getSum();
@@ -119,7 +135,9 @@ void Game::deal() {
 }
 
 int Game::dealOne(Hand &h) {
-    return shoe.draw(h);
+    int card = shoe.draw(h);
+    DEBUG_PRINT("Dealing " + std::to_string(card));
+    return card;
 }
 
 void Game::bet() {
@@ -155,7 +173,7 @@ bool Game::checkInsurance() {
 }
 
 result Game::setResult(Player &p) {
-    //Only do this for undetermined results, i.e., not LOSS or BLACKJACK
+    //Only do this for undetermined results, i.e., don't change LOSS or BLACKJACK
     if (p.won == PUSH) {
         if (dealer.bust() || p.getSum() > dealer.getSum())
             p.won = WIN;

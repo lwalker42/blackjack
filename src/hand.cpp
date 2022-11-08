@@ -39,3 +39,31 @@ bool Hand::isSoft() {
 bool Hand::bust() {
     return sum > 21;
 }
+
+std::string Hand::toString() const {
+    std::string str = "[";
+    for (int card : cards) {
+        str += std::to_string(card) + ", ";
+    }
+
+    if (cards.size() > 0) {
+        str.pop_back();
+        str.pop_back();
+    }
+    str += "]";
+    return str;
+}
+
+#include <stdexcept>
+#include "debug.hpp"
+void Hand::setHand(const std::vector<int> &newCards) {
+    #ifdef DEBUG
+    cards.clear();
+    for (int card : newCards) {
+        cards.push_back(card);
+    }
+    #else
+        (void)newCards;
+        throw std::runtime_error("Debug mode not active");
+    #endif
+}

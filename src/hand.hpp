@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <string>
 
 class Hand {
 protected:
@@ -17,4 +18,9 @@ public:
     int size();
     bool isSoft();
     bool bust();
+
+    std::string toString() const;
+
+    //Testing
+    void setHand(const std::vector<int> &);
 };

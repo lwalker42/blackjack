@@ -18,6 +18,11 @@ struct Rules {
     bool lateSurrender = true;
     bool dealerShowHoleCard = true;
 
+    Rules() {
+        minBet = 0;
+        maxBet = INT32_MAX;
+    }
+
     Rules(int minB, int maxB) {
         if (minB >= 0 && minB <= maxB) {
             minBet = minB;
@@ -38,7 +43,7 @@ private:
     }
 public:
 
-    std::string toString() {
+    std::string toString() const {
         std::string str;
         str += "Minimum Bet: " + toStr(minBet);
         str += "Maximum Bet: " + toStr(maxBet);

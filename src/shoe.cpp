@@ -21,6 +21,7 @@ void Shoe::initDeck() {
     shuffle();    
 }
 
+//Draws card from back/end of deck
 int Shoe::draw(Hand &hand) {
     //Auto-shuffle
     if (deck.size() == 0) {
