@@ -15,7 +15,7 @@ void Shoe::initDeck() {
 
     for (int i = 0; i < numDecks * SUITS; i++) {
         for (int j = 0; j < CARDS_PER_SUIT; j++) {
-            deck.push_back(cards[j]);
+            deck.push_back(suitOfCards[j]);
         }        
     }
     shuffle();    

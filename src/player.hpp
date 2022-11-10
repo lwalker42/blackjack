@@ -5,11 +5,12 @@
 #include "rules.hpp"
 #include "hand.hpp"
 #include "shoe.hpp"
-enum result {WIN, LOSS, PUSH, BLACKJACK};
 
+enum result {WIN, LOSS, PUSH, BLACKJACK};
 std::string toString(result);
 
 enum action {STAND, HIT, DOUBLE, SPLIT, SURRENDER};
+std::string toString(action);
 
 typedef std::vector<action> actionList;
 class Player;
@@ -19,12 +20,13 @@ class Player : public Hand {
     double bankroll = 0;
     double bet = 0;
     double insurance = 0;
-    splits splitHands;
+    splits empty;
+    splits &splitHands;
 public:
     result won = PUSH;
 
-    Player() {};
-    Player(double &b) : bankroll(b) {};
+    Player() : splitHands(empty) {};
+    Player(double &b) : bankroll(b), splitHands(empty) {};
     Player(double &b, splits &hands) : bankroll(b), splitHands(hands) {};
     void clear();
 

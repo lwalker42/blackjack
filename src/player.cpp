@@ -8,6 +8,11 @@ std::string toString(result w) {
     return strs[w];
 }
 
+std::string toString(action w) {
+    static const std::string strs[] = {"stand", "hit", "double", "split", "surrender"};
+    return strs[w];
+}
+
 void Player::clear() {
     Hand::clear();
     bet = 0;
@@ -15,11 +20,12 @@ void Player::clear() {
     insurance = 0;
     splitHands.clear();
 }
-
+#include <algorithm>
 action Player::getAction(const Shoe &, int upCard, Rules &rules) {
     (void)upCard;
     actionList actions = possibleActions(rules);
-    
+    if (std::find(actions.begin(), actions.end(), SPLIT) != actions.end())
+        return SPLIT;
     static std::random_device rd;
     static std::mt19937_64 g(rd());
     //20 is lowest common multiple of 5, 4, 2
@@ -51,7 +57,8 @@ bool Player::splitHand() {
 
     Player newHand(bankroll, splitHands);
     newHand.makeBet(bet);
-    newHand.draw(cards[1]);
+    sum -= cards[0] == 11 ? 1 : cards[0];
+    newHand.draw(cards[0]);
     cards.pop_back();
     splitHands.push_back(newHand);
     return true;

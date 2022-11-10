@@ -5,6 +5,7 @@
 class Hand {
 protected:
     std::vector<int> cards;
+    //Precalculated sum to reduce overhead
     int sum = 0;
     bool soft = false;
 

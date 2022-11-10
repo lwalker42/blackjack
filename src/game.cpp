@@ -11,7 +11,7 @@ Game::Game(Rules &r, int numDecks, bool b) : rules(r), betting(b) {
 }
 
 void Game::playRound() {
-    DEBUG_PRINT("Starting round");
+    DEBUG_PRINT("Starting round\n");
     if (shoe.cutCardReached(rules.deckPenetration)) shoe.initDeck();
     if (betting) bet();
     deal();
@@ -19,29 +19,30 @@ void Game::playRound() {
     bool insurance = rules.insurance && betting && checkInsurance();
     bool blackjack = checkBlackjack();
 
-    if(blackjack) DEBUG_PRINT("Dealer blackjack");
-    if(insurance) DEBUG_PRINT("Insurance offered");
-    DEBUG_PRINT("Dealer upcard: " + std::to_string(dealer.upCard()));
+    if(blackjack) DEBUG_PRINT("Dealer blackjack\n");
+    if(insurance) DEBUG_PRINT("Insurance offered\n");
+    DEBUG_PRINT("Dealer upcard: " + std::to_string(dealer.upCard()) + "\n\n");
+    DEBUG_PRINT("");
     if (!blackjack) {
         int i = 0;
         for (auto &player : players) {
             i++;
             DEBUG_PRINT("Player " + std::to_string(i) + "'s starting hand: " + player.toString() 
-                        + " with total: " + std::to_string(player.getSum()));
+                        + " with total: " + std::to_string(player.getSum()) + '\n');
             playHand(player);
             DEBUG_PRINT("Player " + std::to_string(i) + "'s ending hand: " + player.toString() 
-                        + " with total: " + std::to_string(player.getSum()));
+                        + " with total: " + std::to_string(player.getSum()) + "\n\n");
         }
         DEBUG_PRINT("Dealer's starting hand: " + dealer.toString() + " with total: " 
-                    + std::to_string(dealer.getSum()));
+                    + std::to_string(dealer.getSum()) + '\n');
         playDealer();
         DEBUG_PRINT("Dealer's ending hand: " + dealer.toString() + " with total: " 
-                    + std::to_string(dealer.getSum()));
+                    + std::to_string(dealer.getSum()) + "\n\n");
         i = 0;
         for (auto &player : players) {
             i++;
             setResult(player);
-            DEBUG_PRINT("Player " + std::to_string(i) + "'s result: " + toString(player.won));
+            DEBUG_PRINT("Player " + std::to_string(i) + "'s result: " + toString(player.won) + '\n');
         }
     }
 
@@ -50,24 +51,27 @@ void Game::playRound() {
 }
 
 result Game::playHand(Player &p) {
-    Player current = p;
     int i = -1;
-    while (i < p.numHands()) {
-        current = i == -1 ? p : p.getHand(i);
+    while (i+1 < p.numHands()) {
+        Player &current = i == -1 ? p : p.getHand(i);
+        //DEBUG_PRINT("i = " + std::to_string(i) + ", numHands() = " + std::to_string(current.numHands()) + ", current hand = " + current.toString() + "\t");
+        DEBUG_PRINT("Hand # " + std::to_string(i+2) + ": ");
         //Split hands have 1 card
         if (current.size() == 1) {
+            
             if (current.getSum() == 11) {
             /*Handle Resplit aces later*/
-                dealOne(current);
+                DEBUG_PRINT("Ace gets 1 card ");
                 i++;
-                continue;
-            } else {
-                dealOne(current);
             }
+            dealOne(current);
+            DEBUG_PRINT("Current hand: " + std::to_string(i+2) + ": " + current.toString() + "\n");
+            continue;
         }
 
-        action a = p.getAction(shoe, dealer.upCard(), rules);
+        action a = current.getAction(shoe, dealer.upCard(), rules);
         actionList all = current.possibleActions(rules);
+        DEBUG_PRINT("Player chooses to " + toString(a) + ". ");
         if (std::find(all.begin(), all.end(), a) != all.end()) {
             if (a == STAND) {
                 i++;
@@ -90,7 +94,10 @@ result Game::playHand(Player &p) {
                 if(!current.splitHand()) {
                     throw std::runtime_error("Insufficient funds to split");
                 }
+                DEBUG_PRINT(std::to_string(current.numHands()) + " total hands\n");
+                continue;
             } else if (a == SURRENDER) {
+                i++;
                 current.modifyBet(.5);
                 current.won = LOSS;
             }
@@ -98,7 +105,9 @@ result Game::playHand(Player &p) {
         } else {
             throw std::invalid_argument("Invalid action");
         }
+        DEBUG_PRINT("Current hand: " + current.toString() + (current.bust() ? " BUSTS\n" : "\n"));
     }
+    //DEBUG_PRINT("i = " + std::to_string(i) + " numHands() = " + std::to_string(current.numHands()) + '\t');
     return p.won;
 }
 
@@ -122,21 +131,30 @@ void Game::deal() {
         //Handle counting here later
         shoe.draw(dealer);
     }*/
-
+    int j = 0;
     for (auto &player : players) {
+        j++;
+        DEBUG_PRINT("Dealing Player " + std::to_string(j) + ": ");
         for (int i = 0; i < 2; i++) {
             dealOne(player);
         }
+        DEBUG_PRINT("\n");
     }
+    for (auto &player : players) {
+        DEBUG_PRINT("Player hand: " + player.toString() + '\n');
+    }
+
+    DEBUG_PRINT("Dealing Dealer: ");
     for (int i = 0; i < 2; i++) {
         //Handle counting here later
             dealOne(dealer);
     }
+    DEBUG_PRINT("\n");
 }
 
 int Game::dealOne(Hand &h) {
     int card = shoe.draw(h);
-    DEBUG_PRINT("Dealing " + std::to_string(card));
+    DEBUG_PRINT("Dealt " + std::to_string(card) + " ");
     return card;
 }
 
