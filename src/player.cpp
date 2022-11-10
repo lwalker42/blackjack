@@ -39,9 +39,16 @@ actionList Player::possibleActions(Rules &rules) {
     if (cards.size() == 2) {
         //Split available
         if (cards[0] == cards[1]) {
-            return {STAND, HIT, DOUBLE, SPLIT, SURRENDER};
+            //Can only surrender initial hand
+            if (numHands() > 1)
+                return {STAND, HIT, DOUBLE, SPLIT};
+            else
+                return {STAND, HIT, DOUBLE, SPLIT, SURRENDER};
         } else {
-            return {STAND, HIT, DOUBLE, SURRENDER};
+            if (numHands() > 1)
+                return {STAND, HIT, DOUBLE};
+            else
+                return {STAND, HIT, DOUBLE, SURRENDER};
         }
     } else {
         return {STAND, HIT};
@@ -68,8 +75,9 @@ int Player::numHands() {
     return 1 + splitHands.size();
 }
 
+//Starting hand is 0, first split hand is 1...
 Player &Player::getHand(int i) {
-    return splitHands[i];
+    return i == 0 ? *this : splitHands[i-1];
 }
 
 

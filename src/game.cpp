@@ -30,19 +30,21 @@ void Game::playRound() {
             DEBUG_PRINT("Player " + std::to_string(i) + "'s starting hand: " + player.toString() 
                         + " with total: " + std::to_string(player.getSum()) + '\n');
             playHand(player);
-            DEBUG_PRINT("Player " + std::to_string(i) + "'s ending hand: " + player.toString() 
-                        + " with total: " + std::to_string(player.getSum()) + "\n\n");
+            DEBUG_PRINT("\n\n");
         }
         DEBUG_PRINT("Dealer's starting hand: " + dealer.toString() + " with total: " 
                     + std::to_string(dealer.getSum()) + '\n');
         playDealer();
-        DEBUG_PRINT("Dealer's ending hand: " + dealer.toString() + " with total: " 
-                    + std::to_string(dealer.getSum()) + "\n\n");
+        DEBUG_PRINT("\nDealer's ending hand: " + dealer.toString() + " with total: " 
+                    + std::to_string(dealer.getSum()) + (dealer.bust() ? " BUSTS" : "") + "\n\n");
         i = 0;
         for (auto &player : players) {
             i++;
             setResult(player);
-            DEBUG_PRINT("Player " + std::to_string(i) + "'s result: " + toString(player.won) + '\n');
+            DEBUG_PRINT("Player " + std::to_string(i) + "'s result: " + '\n');
+            for(int j = 0; j < player.numHands(); j++) {
+                DEBUG_PRINT("Hand #" + std::to_string(j+1) + ": " + toString(player.getHand(j).won) + '\n');
+            }
         }
     }
 
@@ -51,11 +53,16 @@ void Game::playRound() {
 }
 
 result Game::playHand(Player &p) {
-    int i = -1;
-    while (i+1 < p.numHands()) {
-        Player &current = i == -1 ? p : p.getHand(i);
+    int i = 0;
+    while (i < p.numHands()) {
+        Player &current = p.getHand(i);
         //DEBUG_PRINT("i = " + std::to_string(i) + ", numHands() = " + std::to_string(current.numHands()) + ", current hand = " + current.toString() + "\t");
-        DEBUG_PRINT("Hand # " + std::to_string(i+2) + ": ");
+        DEBUG_PRINT("Hand # " + std::to_string(i+1) + ": ");
+        if (current.won == BLACKJACK) {
+            DEBUG_PRINT("Blackjack!\n");
+            i++;
+            continue;
+        }
         //Split hands have 1 card
         if (current.size() == 1) {
             
@@ -65,7 +72,7 @@ result Game::playHand(Player &p) {
                 i++;
             }
             dealOne(current);
-            DEBUG_PRINT("Current hand: " + std::to_string(i+2) + ": " + current.toString() + "\n");
+            DEBUG_PRINT("Current hand: " + current.toString() + "\n");
             continue;
         }
 
@@ -191,12 +198,16 @@ bool Game::checkInsurance() {
 }
 
 result Game::setResult(Player &p) {
-    //Only do this for undetermined results, i.e., don't change LOSS or BLACKJACK
-    if (p.won == PUSH) {
-        if (dealer.bust() || p.getSum() > dealer.getSum())
-            p.won = WIN;
-        else if (p.getSum() < dealer.getSum())
-            p.won = LOSS;
+    //Repeat for each split hand
+    for (int i = 0; i < p.numHands(); i++) {
+        Player &current = p.getHand(i);
+        //Only do this for undetermined results, i.e., don't change LOSS or BLACKJACK
+        if (current.won == PUSH) {
+            if (dealer.bust() || current.getSum() > dealer.getSum())
+                current.won = WIN;
+            else if (current.getSum() < dealer.getSum())
+                current.won = LOSS;
+        }
     }
     return p.won;
 }

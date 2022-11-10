@@ -12,7 +12,7 @@
 int main() {
     Rules rules(10, 500);
     Game game(rules);
-    std::cout << rules.toString() << '\n';
+    //std::cout << rules.toString() << '\n';
     Shoe &shoe = game.shoe;
     std::vector<int> cards = {9, 9, 11, 10, 2, 2, 10, 10, 9, 9};
     std::reverse(cards.begin(), cards.end());
